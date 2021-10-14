@@ -1,0 +1,86 @@
+inputs:
+
+boughtPrice
+packaging
+shipping
+extra
+
+requiredProfit
+maxAllowedSaleMult
+
+---------------------
+
+listedPrice = ???
+
+etsyListingCreationCommission = $0.2
+etsyPurchaseCommission = 0.05 * x
+etsyTaxMult = 1.2
+paypallCoef = max(paypallUSCommission, paypallEUCommission)
+paypallAdd = $0.3
+WBCommission = 0.04
+
+---------------
+
+upfrontSpending = boughtPrice + packaging + shipping + extra
+
+etsyCut = (etsyListingCreationCommission + listedPrice * etsyPurchaseCommission) * etsyTaxMult
+
+paypallCut = (paypallCoef * listedPrice + paypallAdd)
+
+WBCut = (listedPrice - paypallCut) * WBCommission
+
+saleMargin = listedPrice * maxAllowedSaleMult
+
+
+
+
+profit = listedPrice - upfrontSpending - etsyCut - paypallCut - WBCut - saleMargin
+
+
+
+
+profit = listedPrice - 
+    (boughtPrice + packaging + shipping + extra) -
+    (etsyListingCreationCommission + listedPrice * etsyPurchaseCommission) * etsyTaxMult -
+    (paypallCoef * listedPrice + paypallAdd) -
+    (listedPrice - (paypallCoef * listedPrice + paypallAdd)) * WBCommission -
+    (listedPrice * maxAllowedSaleMult)
+
+
+listedPrice = x
+
+boughtPrice = a
+packaging = b
+shipping = c
+extra = d
+
+u = a + b + c + d
+
+etsyListingCreationCommission = e
+etsyPurchaseCommission = f
+etsyTaxMult = g
+paypallCoef = h
+paypallAdd = i
+WBCommission = j
+maxAllowedSaleMult = k
+
+profit = y
+
+
+y = x - (a + b + c + d) - g(e + fx) - (hx + i) - j(x - hx - i) - kx
+
+y = x - a - b - c - d - ge - gfx - hx - i - jx + jhx + ji - kx
+
+y = x - gfx - hx - jx + jhx - kx - a - b - c - d - ge - i + ji
+
+y = (1 - gf - h - j + jh - k)x - (a + b + c + d + ge + i - ij)
+
+(1 - gf - h - j + jh - k)x = y + a + b + c + d + ge + i - ij
+
+x = (y + a + b + c + d + ge + i - ij) / (1 - gf - h - j + hj - k)
+
+x = (y + u + ge + i - ij) / (1 - gf - h - j + hj - k)
+
+// THIS SUCKS
+
+// better to create a readable and maintainable funciton(s) for calc the profit, and then just search for the right listed value
