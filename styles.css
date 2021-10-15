@@ -44,6 +44,7 @@ body  {
 hr {
     border: 1px solid rgb(122, 122, 122);
     background: rgb(122, 122, 122);
+    margin: 1em 0;
 }
 
 button {
