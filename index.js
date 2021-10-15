@@ -5,20 +5,33 @@ let extraInput = document.getElementById('extra');
 let salePercentageInput = document.getElementById('sale-percentage');
 let profitInput = document.getElementById('profit');
 
+const onNumericInput = (e) => {
+    e.target.value = e.target.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+}
+
+priceBoughtInput.addEventListener('input', onNumericInput);
+packagingInput.addEventListener('input', onNumericInput);
+shippingInput.addEventListener('input', onNumericInput);
+extraInput.addEventListener('input', onNumericInput);
+salePercentageInput.addEventListener('input', onNumericInput);
+profitInput.addEventListener('input', onNumericInput);
+
 let submitButton = document.getElementById('submit');
 
+let resultDiv = document.getElementById('result');
+
 submitButton.addEventListener('click', () => {
-    /** @type {ParametersModel} */
-    let parameters = {};
+    const priceBought = Number(priceBoughtInput.value);
+    const packaging = Number(packagingInput.value);
+    const shipping = Number(shippingInput.value);
+    const extra = Number(extraInput.value);
+    const salePercentage = Number(salePercentageInput.value);
+    const profit = Number(profitInput.value);
 
-    parameters.priceBought = Number(priceBoughtInput.value);
-    parameters.packaging = Number(packagingInput.value);
-    parameters.shipping = Number(shippingInput.value);
-    parameters.extra = Number(extraInput.value);
-    parameters.salePercentage = Number(salePercentageInput.value);
-    parameters.profit = Number(profitInput.value);
+    let listedPrice = findListedPrice(priceBought, packaging, shipping, extra, salePercentage, profit);
 
-    console.log(parameters);
+    resultDiv.innerText = `Цена листинга: $${listedPrice}`;
+    resultDiv.className = 'result';
 });
 
 
@@ -35,36 +48,30 @@ function getEtsyCut(listedPrice) {
     const withoutTax = etsyListingCreationCommission + purcahseCut;
     let res = withoutTax * etsyTaxMult;
 
-    console.log('etsy cut', res);
     return res;
 }
 
 function getPaypallCut(listedPrice) {
     let res = listedPrice * paypallCommissionMult + paypallAdd;
 
-    console.log('paypall cut', res);
     return res;
 }
 
 function getWbCut(afterPaypallCut) {
     let res = afterPaypallCut * wbComissionMult;
 
-    console.log('wb cut', res);
     return res;
 }
 
 function getSaleMargin(listedPrice, salePercentage) {
     let res = listedPrice / 100 * salePercentage;
 
-    console.log('sale margin', res);
     return res;
 }
 
 
-function getProfit(listedPrice, boughtPrice, packaging, shipping, extra, salePercentage) {
-    console.log(listedPrice, boughtPrice, packaging, shipping, extra, salePercentage);
-
-    const upfrontCost = boughtPrice + packaging + shipping + extra;
+function getProfit(listedPrice, priceBought, packaging, shipping, extra, salePercentage) {
+    const upfrontCost = priceBought + packaging + shipping + extra;
     const etsyCut = getEtsyCut(listedPrice);
     const paypallCut = getPaypallCut(listedPrice);
     const afterPaypallCut = listedPrice - paypallCut;
@@ -74,18 +81,16 @@ function getProfit(listedPrice, boughtPrice, packaging, shipping, extra, salePer
     return listedPrice - upfrontCost - etsyCut - paypallCut - wbCut - saleMargin;
 }
 
-/** 
- * @typedef {{
- *  priceBought: number,
- *  packaging: number,
- *  shipping: number,
- *  extra: number,
- *  salePercentage: number,
- *  profit: number,
- * }} ParametersModel
- */
+function findListedPrice(priceBought, packaging, shipping, extra, salePercentage, profit) {
+    let potentialPrice = priceBought;
 
-/** @param {ParametersModel} parameters */
-function findListedPrice(parameters) {
-    
+    while(true) {
+        let calculatedProfit = getProfit(potentialPrice, priceBought, packaging, shipping, extra, salePercentage);
+
+        if (Math.ceil(calculatedProfit) === profit) {
+            return potentialPrice;
+        }
+
+        potentialPrice++;
+    }
 }
