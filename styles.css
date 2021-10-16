@@ -78,6 +78,10 @@ button:active {
 }
 
 @media (max-width: 450px) {
+    .form {
+        font-size: 0.85rem;
+    }
+
     .input label {
         margin-bottom: 0.5em;
     }
