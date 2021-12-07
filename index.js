@@ -30,7 +30,9 @@ submitButton.addEventListener('click', () => {
 
     let listedPrice = findListedPrice(priceBought, packaging, shipping, extra, salePercentage, profit);
 
-    resultDiv.innerText = `Цена листинга: $${listedPrice}`;
+    listedPriceStr = `${listedPrice.toFixed(1)}0`;
+
+    resultDiv.innerText = `Цена листинга: $${listedPriceStr}`;
     resultDiv.className = 'result';
 });
 
@@ -82,15 +84,25 @@ function getProfit(listedPrice, priceBought, packaging, shipping, extra, salePer
 }
 
 function findListedPrice(priceBought, packaging, shipping, extra, salePercentage, profit) {
-    let potentialPrice = priceBought;
+    let precision = 0.1;
 
-    while(true) {
-        let calculatedProfit = getProfit(potentialPrice, priceBought, packaging, shipping, extra, salePercentage);
+    let totalExpense = priceBought + packaging + shipping + extra + profit;
 
-        if (Math.ceil(calculatedProfit) === profit) {
-            return potentialPrice;
+    let price = totalExpense * (1 + salePercentage) * 20;
+
+    let step = price / 2;
+
+    while(step > precision) {
+        let calculatedProfit = getProfit(price, priceBought, packaging, shipping, extra, salePercentage);
+
+        if (calculatedProfit > profit) {
+            price -= step;
+        } else {
+            price += step;
         }
 
-        potentialPrice++;
+        step /= 2;
     }
+
+    return price;
 }
